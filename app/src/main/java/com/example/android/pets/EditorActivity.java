@@ -17,6 +17,7 @@ package com.example.android.pets;
 
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
@@ -29,7 +30,6 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
-
 import com.example.android.pets.data.PetContract.PetEntry;
 import com.example.android.pets.data.PetDbHelper;
 
@@ -38,16 +38,9 @@ import com.example.android.pets.data.PetDbHelper;
  */
 public class EditorActivity extends AppCompatActivity {
 
-    /** EditText field to enter the pet's name */
     private EditText mNameEditText;
-
-    /** EditText field to enter the pet's breed */
     private EditText mBreedEditText;
-
-    /** EditText field to enter the pet's weight */
     private EditText mWeightEditText;
-
-    /** EditText field to enter the pet's gender */
     private Spinner mGenderSpinner;
 
     /**
@@ -62,7 +55,6 @@ public class EditorActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_editor);
 
-        // Find all relevant views that we will need to read user input from
         mNameEditText = (EditText) findViewById(R.id.edit_pet_name);
         mBreedEditText = (EditText) findViewById(R.id.edit_pet_breed);
         mWeightEditText = (EditText) findViewById(R.id.edit_pet_weight);
@@ -121,11 +113,12 @@ public class EditorActivity extends AppCompatActivity {
         String weightString = mWeightEditText.getText().toString().trim();
         int weight = Integer.parseInt(weightString);
 
+        /************ OLD *************************
         // Create database helper
         PetDbHelper mDbHelper = new PetDbHelper(this);
-
         // Gets the database in write mode
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
+        *******************************************/
 
         // Create a ContentValues object where column names are the keys,
         // and pet attributes from the editor are the values.
@@ -135,8 +128,33 @@ public class EditorActivity extends AppCompatActivity {
         values.put(PetEntry.COLUMN_PET_GENDER, mGender);
         values.put(PetEntry.COLUMN_PET_WEIGHT, weight);
 
+
+        /******************** NEW *************************/
+        /*
+            We can call the ContentResolver insert() method with the pet content URI and a ContentValues
+            object constructed from the user input fields. One major difference between the SQLiteDatabase
+            insert() method and the ContentResolver insert() method is that one returns a row ID, while
+            the other returns a Uri, respectively.
+        */
+        // Insert a new pet into the provider, returning the content URI for the new pet.
+        Uri newUri = getContentResolver().insert(PetEntry.CONTENT_URI, values);
+
+        // Show a toast message depending on whether or not the insertion was successful
+        if (newUri == null) {
+            // If the new content URI is null, then there was an error with insertion.
+            Toast.makeText(this, getString(R.string.editor_insert_pet_failed),
+                    Toast.LENGTH_SHORT).show();
+        } else {
+            // Otherwise, the insertion was successful and we can display a toast.
+            Toast.makeText(this, getString(R.string.editor_insert_pet_successful),
+                    Toast.LENGTH_SHORT).show();
+        }
+        /************************ NEW *****************************/
+
+        /****************** OLD ******************************
         // Insert a new row for pet in the database, returning the ID of that new row.
         long newRowId = db.insert(PetEntry.TABLE_NAME, null, values);
+
 
         // Show a toast message depending on whether or not the insertion was successful
         if (newRowId == -1) {
@@ -146,6 +164,7 @@ public class EditorActivity extends AppCompatActivity {
             // Otherwise, the insertion was successful and we can display a toast with the row ID.
             Toast.makeText(this, "Pet saved with row id: " + newRowId, Toast.LENGTH_SHORT).show();
         }
+         **********************************************************/
     }
 
     @Override
