@@ -222,6 +222,9 @@ public class PetProvider extends ContentProvider {
         // Otherwise, get writeable database to update the data
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
 
+        //Notify all listeners that the data has changed for the pet content URI- content://com.example.android.pets/pets
+        getContext().getContentResolver().notifyChange(uri, null);
+
         // Returns the number of database rows affected by the update statement
         return database.update(PetContract.PetEntry.TABLE_NAME, values, selection, selectionArgs);
     }

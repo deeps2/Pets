@@ -22,7 +22,6 @@ import android.widget.Spinner;
 import android.widget.Toast;
 import com.example.android.pets.data.PetContract.PetEntry;
 import com.example.android.pets.data.PetDbHelper;
-
 import static android.R.attr.data;
 
 /**
@@ -56,8 +55,10 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         mCurrentPetUri = intent.getData();
         if(mCurrentPetUri == null)
             setTitle("Add a Pet");
-        else
+        else {
             setTitle("Edit Pet");
+            getLoaderManager().initLoader(EXISTING_PET_LOADER, null, this);
+        }
 
         mNameEditText = (EditText) findViewById(R.id.edit_pet_name);
         mBreedEditText = (EditText) findViewById(R.id.edit_pet_breed);
@@ -65,8 +66,6 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         mGenderSpinner = (Spinner) findViewById(R.id.spinner_gender);
 
         setupSpinner();
-
-        getLoaderManager().initLoader(EXISTING_PET_LOADER, null, this);
     }
 
     /**
@@ -109,7 +108,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
     }
 
     /**
-     * Get user input from editor and save pet into database.
+     * Get user input from editor and save pet into database.(either insert or update)
      */
     private void savePet() {
         // Read from input fields
@@ -164,9 +163,9 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             // because mCurrentPetUri will already identify the correct row in the database that we want to modify
             int rowsAffected = getContentResolver().update(mCurrentPetUri, values, null, null);
             if (rowsAffected == 0)
-                Toast.makeText(this,"Pet Updated",Toast.LENGTH_SHORT).show();
+                Toast.makeText(this,"Error with updating Pet",Toast.LENGTH_SHORT).show();
             else
-                Toast.makeText(this, "Error with updating Pet",Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Pet Updated",Toast.LENGTH_SHORT).show();
         }
         /************************ NEW *****************************/
 
@@ -242,6 +241,11 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+
+        // Bail early if the cursor is null or there is less than 1 row in the cursor
+        if (cursor == null || cursor.getCount() < 1) {
+            return;
+        }
 
         // Proceed with moving to the first row of the cursor and reading data from it
         // (This should be the only row in the cursor)
