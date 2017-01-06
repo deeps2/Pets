@@ -241,9 +241,15 @@ public class PetProvider extends ContentProvider {
         final int match = sUriMatcher.match(uri);
         switch (match) {
             case PETS:
+                //Notify all listeners that the data has changed for the pet content URI- content://com.example.android.pets/pets
+                getContext().getContentResolver().notifyChange(uri, null);
+
                 // Delete all rows that match the selection and selection args
                 return database.delete(PetContract.PetEntry.TABLE_NAME, selection, selectionArgs);
             case PET_ID:
+                //Notify all listeners that the data has changed for the pet content URI- content://com.example.android.pets/pets
+                getContext().getContentResolver().notifyChange(uri, null);
+                
                 // Delete a single row given by the ID in the URI
                 selection = PetContract.PetEntry._ID + "=?";
                 selectionArgs = new String[] { String.valueOf(ContentUris.parseId(uri)) };
