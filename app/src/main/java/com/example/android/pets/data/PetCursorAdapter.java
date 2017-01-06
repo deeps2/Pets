@@ -2,6 +2,7 @@ package com.example.android.pets.data;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,6 +54,11 @@ public class PetCursorAdapter extends CursorAdapter {
 
         String petName = cursor.getString(nameColumnIndex);
         String petBreed = cursor.getString(breedColumnIndex);
+
+        // If the pet breed is empty string or null, then use some default text that says "Unknown breed", so the TextView isn't blank.
+        // IMP: We don't want to change anything in database when breed is not selected, this is just a UI change. When the user clicks on a pet with unknown breed then in editor activity the breed field should be empty
+        if (TextUtils.isEmpty(petBreed))
+            petBreed = "Unknown Breed";
 
         nameTextView.setText(petName);
         summarytextView.setText(petBreed);

@@ -249,7 +249,7 @@ public class PetProvider extends ContentProvider {
             case PET_ID:
                 //Notify all listeners that the data has changed for the pet content URI- content://com.example.android.pets/pets
                 getContext().getContentResolver().notifyChange(uri, null);
-                
+
                 // Delete a single row given by the ID in the URI
                 selection = PetContract.PetEntry._ID + "=?";
                 selectionArgs = new String[] { String.valueOf(ContentUris.parseId(uri)) };
