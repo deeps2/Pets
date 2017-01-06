@@ -1,5 +1,6 @@
 package com.example.android.pets;
 
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
@@ -14,6 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 import com.example.android.pets.data.PetContract.PetEntry;
@@ -63,7 +65,21 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
         mCursorAdapter = new PetCursorAdapter(this, null);
         petListView.setAdapter(mCursorAdapter);
 
-       getLoaderManager().initLoader(PET_LOADER, null, this);
+        getLoaderManager().initLoader(PET_LOADER, null, this);
+
+        petListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                Intent intent = new Intent(CatalogActivity.this, EditorActivity.class);
+
+                //Form the content URI that represents the specific pet that was clicked on
+                //by appending ID to the CONTENT_URI
+                Uri currentPetUri = ContentUris.withAppendedId(PetEntry.CONTENT_URI, id);
+
+                intent.setData(currentPetUri);
+                startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -78,7 +94,7 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
      */
 
     //this is talking to DB directly and not through content resolver and content provider channel//
-    private void displayDatabaseInfo() {
+    private void displayDatabaseInfo() {                                                            //######### WILL NOT BE CALLED IF USING LOADERS ##################
         // Create and/or open a database to read from it
     //    SQLiteDatabase db = mDbHelper.getReadableDatabase();
 
