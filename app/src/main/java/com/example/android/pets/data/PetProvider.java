@@ -9,6 +9,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.util.Log;
 
+import static android.R.attr.path;
+
 /**
  * {@link ContentProvider} for Pets app.
  */
@@ -37,8 +39,14 @@ public class PetProvider extends ContentProvider {
         // The calls to addURI() go here, for all of the content URI patterns that the provider
         // should recognize. All paths added to the UriMatcher have a corresponding code to return
         // when a match is found.
-        sUriMatcher.addURI(PetContract.CONTENT_AUTHORITY,PetContract.PATH_PETS,PETS);
-        sUriMatcher.addURI(PetContract.CONTENT_AUTHORITY,PetContract.PATH_PETS + "/#", PET_ID);
+
+        sUriMatcher.addURI(PetContract.CONTENT_AUTHORITY,PetContract.PATH_PETS,PETS); //com.example.android.pets/pets -> 100
+        sUriMatcher.addURI(PetContract.CONTENT_AUTHORITY,PetContract.PATH_PETS + "/#", PET_ID); //com.example.android.pets/pets/# -> 101
+
+        //IMPORTANT: CONTENT_AUTHORITY(String) and 'NOT' (Uri)BASE_CONTENT_URI(content://com.example.android.pets) or (Uri)CONTENT_URI(content://com.example.android.pets/pets)
+        //because syntax requires 3 argument -> [authority(string), path(string), code(int)]  code is UriMatcherCode 100,101 that u will define
+                //Content Uri: content://com.android.contacts/contact/contacts         (DataType is Uri)
+                //             <scheme>  <content authority>          <type of data>
     }
 
     /**
@@ -105,7 +113,7 @@ public class PetProvider extends ContentProvider {
     public Uri insert(Uri uri, ContentValues contentValues) {
         final int match = sUriMatcher.match(uri);
         switch (match) {
-            case PETS:
+            case PETS:  ////no case for PET_ID as we can't have the id of an Pet which is going to be created
                 return insertPet(uri, contentValues);
             default:
                 throw new IllegalArgumentException("Insertion is not supported for " + uri);
@@ -137,7 +145,6 @@ public class PetProvider extends ContentProvider {
 
         // No need to check the breed, any value is valid (including null).
 
-        // TODO: Insert a new pet into the pets database table with the given ContentValues
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
 
         // Insert the new pet with the given values

@@ -25,7 +25,7 @@ public final class PetContract {
      */
         public static final class PetEntry implements BaseColumns {
 
-        public static final Uri CONTENT_URI = Uri.withAppendedPath(BASE_CONTENT_URI, PATH_PETS);
+        public static final Uri CONTENT_URI = Uri.withAppendedPath(BASE_CONTENT_URI, PATH_PETS);//content://com.example.android.pets/pets
 
         /** Name of database table for pets */
         public final static String TABLE_NAME = "pets";
@@ -101,7 +101,5 @@ public final class PetContract {
             return false;
         }
     }
-
-
 }
 

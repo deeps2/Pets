@@ -185,7 +185,7 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
 
 
     /**
-     * Helper method to insert hardcoded pet data into the database. For debugging purposes only.
+     * Helper method to insert HARDCODED pet data into the database. For debugging purposes only.
      */
     private void insertPet() {
         /**********************OLD ONE*****************
@@ -272,6 +272,7 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
                 PetEntry.COLUMN_PET_NAME,
                 PetEntry.COLUMN_PET_BREED };
 
+        // This loader will execute the ContentProvider's query method on a background thread
         return new CursorLoader(this, PetEntry.CONTENT_URI, projection, null, null, null);
     }
 
